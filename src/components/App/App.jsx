@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { Container } from './App.styled';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 import { fetchImages } from 'services/api';
 import SearchBar from 'components/SearchBar/SearchBar';
@@ -44,9 +45,9 @@ class App extends Component {
   render() {
     const { handleSearch } = this;
     return (
-      <>
+      <Container>
         <SearchBar onSubmit={handleSearch} />
-      </>
+      </Container>
     );
   }
 }
