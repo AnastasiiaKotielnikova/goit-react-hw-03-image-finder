@@ -3,6 +3,7 @@ import { Container } from './App.styled';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 import { fetchImages } from 'services/api';
 import SearchBar from 'components/SearchBar/SearchBar';
+import ImageGallery from 'components/ImageGallery';
 
 class App extends Component {
   state = {
@@ -10,6 +11,7 @@ class App extends Component {
     searchQuery: '',
     page: 1,
     status: 'idle',
+    tag: null,
   };
 
   async componentDidUpdate(prevState) {
@@ -43,10 +45,12 @@ class App extends Component {
   };
 
   render() {
+    const { hits } = this.state;
     const { handleSearch } = this;
     return (
       <Container>
         <SearchBar onSubmit={handleSearch} />
+        <ImageGallery images={hits} />
       </Container>
     );
   }

@@ -27,8 +27,8 @@ class SearchBar extends Component {
     const { searchQuery } = this.state;
     return (
       <SearchBarHeader>
-        <Formik onSubmit={handleSubmit}>
-          <SearchForm>
+        <Formik>
+          <SearchForm onSubmit={handleSubmit}>
             <Button type="submit">
               <BsZoomIn size={25} />
             </Button>
@@ -36,7 +36,7 @@ class SearchBar extends Component {
             <Input
               name="searchQuery"
               type="text"
-              autocomplete="off"
+              // autocomplete="off"
               autoFocus
               placeholder="Search images and photos"
               value={searchQuery}
