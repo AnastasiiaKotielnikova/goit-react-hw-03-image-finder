@@ -3,7 +3,8 @@ import { Container } from './App.styled';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 import { fetchImages } from 'services/api';
 import SearchBar from 'components/SearchBar/SearchBar';
-import ImageGallery from 'components/ImageGallery';
+import ImageGallery from 'components/ImageGallery/ImageGallery';
+import Button from 'components/Button/Button';
 
 class App extends Component {
   state = {
@@ -44,13 +45,20 @@ class App extends Component {
     this.setState({ searchQuery: searchName, page: 1, hits: [] });
   };
 
+  handleLoadMore = () => {
+    this.setState(prevState => {
+      return { page: prevState.page + 1 };
+    });
+  };
+
   render() {
     const { hits } = this.state;
-    const { handleSearch } = this;
+    const { handleLoadMore, handleSearch } = this;
     return (
       <Container>
         <SearchBar onSubmit={handleSearch} />
         <ImageGallery images={hits} />
+        <Button onClick={handleLoadMore} />
       </Container>
     );
   }
