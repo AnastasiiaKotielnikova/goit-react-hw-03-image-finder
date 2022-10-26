@@ -5,6 +5,7 @@ import { fetchImages } from 'services/api';
 import SearchBar from 'components/SearchBar/SearchBar';
 import ImageGallery from 'components/ImageGallery/ImageGallery';
 import Button from 'components/Button/Button';
+import Loader from 'components/Loader/Loader';
 
 class App extends Component {
   state = {
@@ -52,13 +53,14 @@ class App extends Component {
   };
 
   render() {
-    const { hits } = this.state;
+    const { hits, status } = this.state;
     const { handleLoadMore, handleSearch } = this;
     return (
       <Container>
         <SearchBar onSubmit={handleSearch} />
         <ImageGallery images={hits} />
         <Button onClick={handleLoadMore} />
+        {status === 'pending' && <Loader />}
       </Container>
     );
   }
