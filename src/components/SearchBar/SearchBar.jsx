@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import { Formik } from 'formik';
+import { Formik } from 'formik';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 import { BsZoomIn } from 'react-icons/bs';
 import { SearchBarHeader, SearchForm, Button, Input } from './SearchBar.styled';
@@ -27,23 +27,23 @@ class SearchBar extends Component {
     const { searchQuery } = this.state;
     return (
       <SearchBarHeader>
-        {/* <Formik> */}
-        <SearchForm onSubmit={handleSubmit}>
-          <Button type="submit">
-            <BsZoomIn size={25} />
-          </Button>
+        <Formik>
+          <SearchForm onSubmit={handleSubmit}>
+            <Button type="submit">
+              <BsZoomIn size={25} />
+            </Button>
 
-          <Input
-            name="searchQuery"
-            type="text"
-            autocomplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            value={searchQuery}
-            onChange={handleNameChange}
-          />
-        </SearchForm>
-        {/* </Formik> */}
+            <Input
+              name="searchQuery"
+              type="text"
+              // autocomplete="off"
+              autoFocus
+              placeholder="Search images and photos"
+              value={searchQuery}
+              onChange={handleNameChange}
+            />
+          </SearchForm>
+        </Formik>
       </SearchBarHeader>
     );
   }
