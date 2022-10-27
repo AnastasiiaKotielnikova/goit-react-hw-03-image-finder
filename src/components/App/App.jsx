@@ -1,11 +1,12 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { Container } from './App.styled';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 import { fetchImages } from 'services/api';
 import SearchBar from 'components/SearchBar/SearchBar';
-import ImageGallery from 'components/ImageGallery/ImageGallery';
-import Button from 'components/Button/Button';
-import Loader from 'components/Loader/Loader';
+import ImageGallery from 'components/ImageGallery';
+import Button from 'components/Button';
+import Loader from 'components/Loader';
+import Modal from 'components/Modal';
 
 class App extends Component {
   state = {
@@ -13,10 +14,11 @@ class App extends Component {
     searchQuery: '',
     page: 1,
     status: 'idle',
+    largeUrl: null,
     tag: null,
   };
 
-  async componentDidUpdate(prevState) {
+  async componentDidUpdate(prevProps, prevState) {
     const { searchQuery, page } = this.state;
     if (searchQuery !== prevState.searchQuery || page !== prevState.page) {
       this.setState({ status: 'pending' });
@@ -26,7 +28,6 @@ class App extends Component {
         this.setState(prevState => {
           return { hits: [...prevState.hits, ...response], status: 'resolved' };
         });
-
         if (response.length === 0) {
           Report.failure(
             'Search Failure',
@@ -52,15 +53,29 @@ class App extends Component {
     });
   };
 
+  onModalClose = () => {
+    this.setState({ largeUrl: null, tag: null });
+  };
+
+  openModal = (url, alt) => this.setState({ largeUrl: url, tag: alt });
+
   render() {
-    const { hits, status } = this.state;
-    const { handleLoadMore, handleSearch } = this;
+    const { hits, status, largeUrl, tag } = this.state;
+    const { handleLoadMore, handleSearch, onModalClose, openModal } = this;
     return (
       <Container>
         <SearchBar onSubmit={handleSearch} />
-        <ImageGallery images={hits} />
-        <Button onClick={handleLoadMore} />
         {status === 'pending' && <Loader />}
+        {status === 'resolved' && hits.length > 0 && (
+          <>
+            <ImageGallery images={hits} onOpenModal={openModal} />
+            <Button onClick={handleLoadMore} />
+          </>
+        )}
+        {status === 'rejected' && (
+          <h2>Ups... Something went wrong. Please try again later.</h2>
+        )}
+        {largeUrl && <Modal url={largeUrl} alt={tag} onClose={onModalClose} />}
       </Container>
     );
   }
