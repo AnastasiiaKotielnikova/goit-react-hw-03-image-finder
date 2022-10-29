@@ -13,13 +13,16 @@ class App extends Component {
     hits: [],
     searchQuery: '',
     page: 1,
+    perPage: 12,
     status: 'idle',
+    totalHits: null,
     largeUrl: null,
     tag: null,
   };
 
-  async componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(_, prevState) {
     const { searchQuery, page } = this.state;
+
     if (searchQuery !== prevState.searchQuery || page !== prevState.page) {
       this.setState({ status: 'pending' });
 
@@ -53,6 +56,12 @@ class App extends Component {
     });
   };
 
+  checkTheNextPage = () => {
+    const { totalHits, page, perPage } = this.state;
+    const maxShownImages = page * perPage;
+    return totalHits > maxShownImages;
+  };
+
   onModalClose = () => {
     this.setState({ largeUrl: null, tag: null });
   };
@@ -61,20 +70,28 @@ class App extends Component {
 
   render() {
     const { hits, status, largeUrl, tag } = this.state;
-    const { handleLoadMore, handleSearch, onModalClose, openModal } = this;
+    const {
+      handleLoadMore,
+      handleSearch,
+      onModalClose,
+      openModal,
+      checkTheNextPage,
+    } = this;
+
     return (
       <Container>
         <SearchBar onSubmit={handleSearch} />
-        {status === 'pending' && <Loader />}
-        {status === 'resolved' && hits.length > 0 && (
-          <>
-            <ImageGallery images={hits} onOpenModal={openModal} />
+        <>
+          <ImageGallery images={hits} onOpenModal={openModal} />
+          {status === 'resolved' && checkTheNextPage() && (
             <Button onClick={handleLoadMore} />
-          </>
-        )}
+          )}
+        </>
+        {status === 'pending' && <Loader />}
         {status === 'rejected' && (
           <h2>Ups... Something went wrong. Please try again later.</h2>
         )}
+
         {largeUrl && <Modal url={largeUrl} alt={tag} onClose={onModalClose} />}
       </Container>
     );
