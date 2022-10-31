@@ -13,9 +13,7 @@ class App extends Component {
     hits: [],
     searchQuery: '',
     page: 1,
-    perPage: 12,
     status: 'idle',
-    totalHits: null,
     largeUrl: null,
     tag: null,
   };
@@ -56,11 +54,11 @@ class App extends Component {
     });
   };
 
-  checkTheNextPage = () => {
-    const { totalHits, page, perPage } = this.state;
-    const maxShownImages = page * perPage;
-    return totalHits > maxShownImages;
-  };
+  // checkTheNextPage = () => {
+  //   const { totalHits, page, perPage } = this.state;
+  //   const maxShownImages = page * perPage;
+  //   return totalHits > maxShownImages;
+  // };
 
   onModalClose = () => {
     this.setState({ largeUrl: null, tag: null });
@@ -70,23 +68,17 @@ class App extends Component {
 
   render() {
     const { hits, status, largeUrl, tag } = this.state;
-    const {
-      handleLoadMore,
-      handleSearch,
-      onModalClose,
-      openModal,
-      checkTheNextPage,
-    } = this;
+    const { handleLoadMore, handleSearch, onModalClose, openModal } = this;
 
     return (
       <Container>
         <SearchBar onSubmit={handleSearch} />
-        <>
-          <ImageGallery images={hits} onOpenModal={openModal} />
-          {status === 'resolved' && checkTheNextPage() && (
+        {hits.length > 0 && (
+          <>
+            <ImageGallery images={hits} onOpenModal={openModal} />
             <Button onClick={handleLoadMore} />
-          )}
-        </>
+          </>
+        )}
         {status === 'pending' && <Loader />}
         {status === 'rejected' && (
           <h2>Ups... Something went wrong. Please try again later.</h2>
