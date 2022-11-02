@@ -10,12 +10,11 @@ import Modal from 'components/Modal';
 
 class App extends Component {
   state = {
-    hits: [],
+    images: [],
     searchQuery: '',
     page: 1,
+    pages: null,
     status: 'idle',
-    largeUrl: null,
-    tag: null,
   };
 
   async componentDidUpdate(_, prevState) {
@@ -26,10 +25,12 @@ class App extends Component {
 
       try {
         const response = await fetchImages(searchQuery, page);
-        this.setState(prevState => {
-          return { hits: [...prevState.hits, ...response], status: 'resolved' };
-        });
-        if (response.length === 0) {
+        this.setState(({ images }) => ({
+          images: [...images, ...response.images],
+          status: 'resolved',
+        }));
+
+        if (response.images.length === 0) {
           Report.failure(
             'Search Failure',
             'There is no images for your query. Please enter other query',
@@ -45,7 +46,7 @@ class App extends Component {
   }
 
   handleSearch = searchName => {
-    this.setState({ searchQuery: searchName, page: 1, hits: [] });
+    this.setState({ searchQuery: searchName, page: 1, images: [] });
   };
 
   handleLoadMore = () => {
@@ -54,12 +55,6 @@ class App extends Component {
     });
   };
 
-  // checkTheNextPage = () => {
-  //   const { totalHits, page, perPage } = this.state;
-  //   const maxShownImages = page * perPage;
-  //   return totalHits > maxShownImages;
-  // };
-
   onModalClose = () => {
     this.setState({ largeUrl: null, tag: null });
   };
@@ -67,16 +62,18 @@ class App extends Component {
   openModal = (url, alt) => this.setState({ largeUrl: url, tag: alt });
 
   render() {
-    const { hits, status, largeUrl, tag } = this.state;
+    const { images, status, largeUrl, tag, page, pages } = this.state;
     const { handleLoadMore, handleSearch, onModalClose, openModal } = this;
+    const checkTheNextPage = page === pages;
 
     return (
       <Container>
         <SearchBar onSubmit={handleSearch} />
-        {hits.length > 0 && (
+        {images.length > 0 && (
           <>
-            <ImageGallery images={hits} onOpenModal={openModal} />
-            <Button onClick={handleLoadMore} />
+            <ImageGallery images={images} onOpenModal={openModal} />
+            {status === 'resolved' && <Button onClick={handleLoadMore} />}
+            {status === 'reject' && checkTheNextPage}
           </>
         )}
         {status === 'pending' && <Loader />}

@@ -8,5 +8,14 @@ export const fetchImages = async (query, page) => {
   const response = await axios.get(
     `?q=${query}&page=${page}&key=${MY_KEY}&image_type=photo&orientation=horizontal&per_page=12`
   );
-  return response.data.hits;
+
+  const normalizedImages = response.data.hits.map(
+    ({ id, largeImageURL, webformatURL, tags }) => {
+      return { id, largeImageURL, webformatURL, tags };
+    }
+  );
+
+  const pages = Math.ceil(response.data.totalHits / 12);
+
+  return { images: normalizedImages, pages };
 };
